@@ -11,12 +11,12 @@ func ZeroField(ptr any, name string) error {
 		return fmt.Errorf("need non-nil pointer")
 	}
 	v = v.Elem()
-	// BUG: mutate a copy, never write back
-	tmp := reflect.New(v.Type()).Elem()
-	tmp.Set(v)
-	f := tmp.FieldByName(name)
-	if !f.IsValid() || !f.CanSet() {
-		return fmt.Errorf("field %s", name)
+	f := v.FieldByName(name)
+	if !f.IsValid() {
+		return fmt.Errorf("no field %s", name)
+	}
+	if !f.CanSet() {
+		return fmt.Errorf("field %s not settable", name)
 	}
 	f.Set(reflect.Zero(f.Type()))
 	return nil
